@@ -1,0 +1,6 @@
+streamlit
+pandas 
+PIL
+numpy
+xgboost
+catboost
