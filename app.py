@@ -143,7 +143,9 @@ if option == 'Model Run':
 
                 data.columns = ['Carrier', 'class', 'Time (days)']
                 # st.write(data[data['preds'] == prediction.min()].reset_index())
-                st.write(data.head(3))
+                st.success(
+                    f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
+                st.dataframe(data.head(3))
 
 
 elif option == 'Model Constraints':
