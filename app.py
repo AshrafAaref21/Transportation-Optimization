@@ -83,18 +83,19 @@ if option == 'Model Run':
 
             data['expected time'] = RegModel(
                 data['carriers'], city, weight, start_date)
-            data['upper limit'] = data['expected time'] + \
-                limits(data['expected time'])
-            data['lower limit'] = data['expected time'] - \
-                limits(data['expected time'])
-            data['lower limit'] = data['lower limit'].apply(
-                lambda x: x if x > 0 else 0.)
+            # data['upper limit'] = data['expected time'] + \
+            #     limits(data['expected time'])
+            # data['lower limit'] = data['expected time'] - \
+            #     limits(data['expected time'])
+            # data['lower limit'] = data['lower limit'].apply(
+            #     lambda x: x if x > 0 else 0.)
 
             data = data.sort_values('expected time')
+            data.columns = ['Carrier', 'class', 'Time (days)']
 
             st.success(
                 f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
-            st.dataframe(data,
+            st.dataframe(data[data['class'] == data['class'].min()],
                          use_container_width=True)
             st.snow()
 
@@ -131,14 +132,16 @@ if option == 'Model Run':
                 data['expected time'] = RegModel(
                     data['carriers'], city, weight, start_date)
 
-                data['upper limit'] = data['expected time'] + \
-                    limits(data['expected time'])
-                data['lower limit'] = data['expected time'] - \
-                    limits(data['expected time'])
-                data['lower limit'] = data['lower limit'].apply(
-                    lambda x: x if x > 0 else 0.)
+                # data['upper limit'] = data['expected time'] + \
+                #     limits(data['expected time'])
+                # data['lower limit'] = data['expected time'] - \
+                #     limits(data['expected time'])
+                # data['lower limit'] = data['lower limit'].apply(
+                #     lambda x: x if x > 0 else 0.)
 
                 data = data.sort_values('expected time')
+                data = data.sort_values('expected time')
+                data.columns = ['Carrier', 'class', 'Time (days)']
                 # st.write(data[data['preds'] == prediction.min()].reset_index())
                 st.write(data)
 
