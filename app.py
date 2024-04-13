@@ -78,8 +78,8 @@ if option == 'Model Run':
                 [i, city, weight, start_date.year, start_date.month, start_date.day, start_date.weekday()] for i in available_carriers
             ])
             data['class'] = prediction
-            # data = data[data['class'] == prediction.min(
-            # )].reset_index().drop('index', axis=1)
+            data = data[data['class'] == prediction.min(
+            )].reset_index().drop('index', axis=1)
 
             data['expected time'] = RegModel(
                 data['carriers'], city, weight, start_date)
@@ -140,7 +140,7 @@ if option == 'Model Run':
                 #     lambda x: x if x > 0 else 0.)
 
                 data = data.sort_values('expected time')
-                data = data.sort_values('expected time')
+
                 data.columns = ['Carrier', 'class', 'Time (days)']
                 # st.write(data[data['preds'] == prediction.min()].reset_index())
                 st.write(data)
