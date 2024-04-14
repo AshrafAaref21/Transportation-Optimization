@@ -25,7 +25,6 @@ You can find the dashboard from this [link](https://ml-carriers-ksa.streamlit.ap
 -----------------------------------------------------------------
 
 ## Model Flowchart
------------------
 ![Flowchart](https://github.com/AshrafAaref21/Transportation-Optimization/assets/82468597/72b580ee-5107-4deb-b959-3a9bb71b8a50)
 
 
