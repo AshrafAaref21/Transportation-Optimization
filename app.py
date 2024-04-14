@@ -95,7 +95,7 @@ if option == 'Model Run':
 
             st.success(
                 f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
-            st.dataframe(data.head(3),
+            st.dataframe(data,
                          use_container_width=True)
             st.snow()
 
@@ -145,7 +145,7 @@ if option == 'Model Run':
                 # st.write(data[data['preds'] == prediction.min()].reset_index())
                 st.success(
                     f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
-                st.dataframe(data.head(3))
+                st.dataframe(data)
 
 
 elif option == 'Model Constraints':
