@@ -1,7 +1,7 @@
 
 # **Building And Deploying Machine Learnning Model**
 
-Creating Software to manage an Company Orders (Starting from Data minning and feature engineering to model selection and final making a dashboard to interact with employees).
+Creating Software to manage an Company Orders using Machine learning model that predicts Company Carriers Delivery Duration and Carriers Constraints (Starting from Data minning and feature engineering to model selection and final making a dashboard to interact with employees).
 
 ---------------------------
 
