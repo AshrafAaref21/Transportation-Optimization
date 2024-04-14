@@ -15,7 +15,7 @@ model.load_model("model")
 
 # open Logo file
 img = Image.open("logo.png")
-img = img.resize((100, 100))
+img = img.resize((70, 70))
 ksa = Image.open('ksa.png').resize((100, 100))
 # Set up the page configuration
 st.set_page_config(
