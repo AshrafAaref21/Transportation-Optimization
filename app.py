@@ -51,7 +51,7 @@ if option == 'Model Run':
     ])
 
     # Date Input
-    start_date = st.date_input('Input Date',
+    start_date = st.date_input('Pickup Date',
                                value=datetime.today(),
                                )
 
