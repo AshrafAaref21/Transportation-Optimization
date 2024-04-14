@@ -35,9 +35,9 @@ df = pd.read_csv('constraints.csv')
 
 if option == 'Model Run':
     # Page Header
-    col_1, col_2 = st.columns([5, 1])
+    col_1, col_2 = st.columns([6, 1])
     with col_1:
-        st.title(":coffee: Get The Perfect Carrier For your Shippments")
+        st.title(":coffee: Get The Perfect Carrier For The Shippments")
     with col_2:
         st.image(ksa)
 
