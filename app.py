@@ -61,7 +61,7 @@ if option == 'Model Run':
     st.divider()
 
     # Initial Predictions button
-    btn = st.button('Initialize The Model',
+    btn = st.button('Start',
                     type='primary', use_container_width=True)
 
     if btn:
@@ -95,7 +95,7 @@ if option == 'Model Run':
 
             st.success(
                 f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
-            st.dataframe(data,
+            st.dataframe(data.reset_index(),
                          use_container_width=True)
             st.snow()
 
