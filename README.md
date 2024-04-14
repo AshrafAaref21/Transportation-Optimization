@@ -20,8 +20,7 @@ Creating Software to manage an Company Orders (Starting from Data minning and fe
 
 ## Model Deployment
 
-
-You can find the dashboard from this [link](https://ml-carriers-ksa.streamlit.app/)
+        You can find the dashboard from this [link](https://ml-carriers-ksa.streamlit.app/)
 -----------------------------------------------------------------
 
 ## Model Flowchart
