@@ -13,8 +13,6 @@ def chart(df: pd.DataFrame):
         total_duration=('Estimated Duration', sum),
         mean_order_weight=('Weight', np.mean),
     ).reset_index()
-    # df['Delivered'] = df['Delivered'].replace(
-    #     {True: 'Delivered', False: 'Not'})
 
     # Plot!
     fig = px.bar(
@@ -23,6 +21,10 @@ def chart(df: pd.DataFrame):
         y='num_orders',
         color='Carrier',
         pattern_shape='Delivered',
+        pattern_shape_sequence=['.', ''],
+        labels={'num_orders': 'Count Of Orders',
+                # 'Carrier': '     Carrier',
+                }
     )
     _, cl, _ = st.columns([2.5, 4, 2.5])
 
