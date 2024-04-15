@@ -2,10 +2,10 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from catboost import CatBoostClassifier
 from PIL import Image
 
 from utils import place_order, predict
+from visual import chart
 
 
 # open Logo file
@@ -28,7 +28,7 @@ option = st.sidebar.selectbox('Select The Activity Option', activities)
 
 # Open Constraints File
 df = pd.read_csv('constraints.csv')
-
+df_orders = pd.read_csv('orders.csv')
 
 if option == 'Model Run':
     # Page Header
@@ -68,12 +68,14 @@ if option == 'Model Run':
             st.write('')
             st.write('')
             btn = st.button('Start',
-                            type='primary', use_container_width=True)
+                            type='primary', use_container_width=True, disabled=weight == 0.)
 
         else:
             order_id = st.number_input('Input Order ID: ', value=1)
             btn = st.button('Order',
-                            type='primary', use_container_width=True)
+                            type='primary', use_container_width=True, disabled=weight == 0.)
+
+    # st.write(get_orders_constraint('A'))
 
     if btn:
         st.divider()
@@ -98,9 +100,9 @@ if option == 'Model Run':
                     'start_date': start_date
                 })
                 if carrier != None:
-                    df = pd.read_csv('orders.csv')
-                    df['Id'] = df['Id'].astype(int)
-                    if int(order_id) in df['Id'].unique():
+
+                    df_orders['Id'] = df_orders['Id'].astype(int)
+                    if int(order_id) in df_orders['Id'].unique():
                         st.error('This Order is already exists :name_badge:')
 
                     else:
@@ -155,7 +157,7 @@ elif option == 'Orders Dashboard':
 
     st.write('')
     if st.checkbox('Visualize Orders'):
-        from visual import chart
+
         chart(df_orders)
 
 else:

@@ -7,6 +7,13 @@ import streamlit as st
 
 
 df_error = pd.read_csv('error.csv', index_col=0)
+df_orders = pd.read_csv('orders.csv')
+df_constraints = pd.read_csv('constraints.csv', index_col='carrier')
+
+df = pd.read_csv('constraints.csv')
+model = CatBoostClassifier()
+
+model.load_model("model")
 
 
 def limits(expected_values: pd.Series = pd.Series()) -> pd.Series:
@@ -35,6 +42,15 @@ def limits(expected_values: pd.Series = pd.Series()) -> pd.Series:
     return pd.Series(ls)
 
 
+def get_orders_constraint(carriers):
+    new_list_of_carriers = []
+    for carrier in carriers:
+        if len(df_orders[(df_orders['Delivered'] == False)
+                         & (df_orders['Carrier'] == carrier)]) < df_constraints.loc[carrier, 'Num Orders']:
+            new_list_of_carriers.append(carrier)
+    return new_list_of_carriers
+
+
 def place_order(order):
     headers = [
         'Id', 'City', 'Date', 'Weight', 'Carrier', 'Estimated Duration', 'Delivered']
@@ -43,16 +59,10 @@ def place_order(order):
     df.to_csv('orders.csv', mode='a', index=False, header=False)
 
 
-df = pd.read_csv('constraints.csv')
-model = CatBoostClassifier()
-
-model.load_model("model")
-
-
-def predict(display=False, features: dict = {}):
+def predict(display: bool = False, features: dict = {}) -> list[str, float]:
 
     available_carriers = list(
-        df[(df['Weight (kg)'] >= features['weight']) & (df[features['city']] == 1)]['carrier'].values)
+        df_constraints[(df_constraints['Weight (kg)'] >= features['weight']) & (df_constraints[features['city']] == 1)].index)
 
     if len(available_carriers) > 0:
         data = pd.DataFrame()
@@ -70,6 +80,7 @@ def predict(display=False, features: dict = {}):
 
         data = data.sort_values('expected time')
         data.columns = ['Carrier', 'class', 'Time (days)']
+        data.index = range(1, len(data)+1)
 
         if display:
 
@@ -86,7 +97,8 @@ def predict(display=False, features: dict = {}):
         )
 
         available_carriers = list(
-            df[(df['Weight (kg)'] >= features['weight'])]['carrier'].values)
+            df_constraints[(df_constraints['Weight (kg)'] >= features['weight'])].index)
+
         if len(available_carriers) == 1:
             st.info(
                 f"We Only Have Carrier {available_carriers[0]} for This Weight")
@@ -120,6 +132,8 @@ def predict(display=False, features: dict = {}):
             data = data.sort_values('expected time')
 
             data.columns = ['Carrier', 'class', 'Time (days)']
+            data.index = range(1, len(data)+1)
+
             # st.write(data[data['preds'] == prediction.min()].reset_index())
             if display:
                 st.success(
