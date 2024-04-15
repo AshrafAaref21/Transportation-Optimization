@@ -56,24 +56,30 @@ if option == 'Model Run':
     weight = st.number_input('Input Order Weight (gm)', value=0.) / 1000
 
     st.divider()
-
+    disabled = weight == 0.
     col1, col2 = st.columns([1.5, 2])
     with col1:
         radio = st.radio(
             'Options', ['Show Prediction', 'Place Order'], index=0)
     # Initial Predictions button
     with col2:
-
+    
         if radio == 'Show Prediction':
             st.write('')
             st.write('')
-            btn = st.button('Start',
-                            type='primary', use_container_width=True, disabled=weight == 0.)
+            text = 'Start'
+            if disabled:
+                text = 'Select Order Features'
+            btn = st.button(text,
+                            type='primary', use_container_width=True, disabled=disabled)
 
         else:
+            text = 'Order'
+            if disabled:
+                text = 'Select Order Features'
             order_id = st.number_input('Input Order ID: ', value=1)
-            btn = st.button('Order',
-                            type='primary', use_container_width=True, disabled=weight == 0.)
+            btn = st.button(text,
+                            type='primary', use_container_width=True, disabled=disabled)
 
     # st.write(get_orders_constraint('A'))
 
