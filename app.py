@@ -5,19 +5,15 @@ from datetime import datetime
 from catboost import CatBoostClassifier
 from PIL import Image
 
-from regmod import RegModel
-from utils import limits
+from utils import place_order, predict
 
-
-model = CatBoostClassifier()
-
-model.load_model("model")
 
 # open Logo file
 img = Image.open("logo.png")
 img = img.resize((70, 70))
 ksa = Image.open('ksa.png').resize((100, 100))
 # Set up the page configuration
+
 st.set_page_config(
     page_title="Carr Co.",
     page_icon=img,
@@ -25,7 +21,8 @@ st.set_page_config(
 )
 
 
-activities = ['Model Run', 'Model Constraints', 'Model Details']
+activities = ['Model Run', 'Model Constraints',
+              'Model Details', 'Orders Dashboard']
 
 option = st.sidebar.selectbox('Select The Activity Option', activities)
 
@@ -56,96 +53,61 @@ if option == 'Model Run':
                                )
 
     # Weight Input
-    weight = st.number_input('Input Order Weight (gm)', value=1.) / 1000
+    weight = st.number_input('Input Order Weight (gm)', value=0.) / 1000
 
     st.divider()
 
+    col1, col2 = st.columns([1.5, 2])
+    with col1:
+        radio = st.radio(
+            'Options', ['Show Prediction', 'Place Order'], index=0)
     # Initial Predictions button
-    btn = st.button('Start',
-                    type='primary', use_container_width=True)
+    with col2:
 
-    if btn:
-        available_carriers = list(
-            df[(df['Weight (kg)'] >= weight) & (df[city] == 1)]['carrier'].values)
-        # st.write(available_carriers)
-        # RegModel(available_carriers, city, weight, start_date)
-
-        if len(available_carriers) > 0:
-            data = pd.DataFrame()
-            data['carriers'] = available_carriers
-
-            prediction = model.predict([
-                [i, city, weight, start_date.year, start_date.month, start_date.day, start_date.weekday()] for i in available_carriers
-            ])
-            data['class'] = prediction
-            data = data[data['class'] == prediction.min(
-            )].reset_index().drop('index', axis=1)
-
-            data['expected time'] = RegModel(
-                data['carriers'], city, weight, start_date)
-            # data['upper limit'] = data['expected time'] + \
-            #     limits(data['expected time'])
-            # data['lower limit'] = data['expected time'] - \
-            #     limits(data['expected time'])
-            # data['lower limit'] = data['lower limit'].apply(
-            #     lambda x: x if x > 0 else 0.)
-
-            data = data.sort_values('expected time')
-            data.columns = ['Carrier', 'class', 'Time (days)']
-
-            st.success(
-                f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
-            st.dataframe(data,
-                         use_container_width=True)
-            st.snow()
+        if radio == 'Show Prediction':
+            st.write('')
+            st.write('')
+            btn = st.button('Start',
+                            type='primary', use_container_width=True)
 
         else:
-            st.warning(
-                f"We don't have a carrier for shipping from {city} with order weight {weight} kg So We released city Constraint"
-            )
+            order_id = st.number_input('Input Order ID: ', value=1)
+            btn = st.button('Order',
+                            type='primary', use_container_width=True)
 
-            available_carriers = list(
-                df[(df['Weight (kg)'] >= weight)]['carrier'].values)
-            if len(available_carriers) == 1:
-                st.info(
-                    f"We Only Have Carrier {available_carriers[0]} for This Weight")
-
-            elif len(available_carriers) == 0:
-                st.info(
-                    "Even after releasing, We don't have Carrier for this special needs")
+    if btn:
+        st.divider()
+        if radio == 'Show Prediction':
+            if weight > 0:
+                predict(display=True, features={
+                    'city': city,
+                    'weight': weight,
+                    'start_date': start_date
+                })
 
             else:
-                st.info(
-                    f"Available Carriers: {' - '.join(available_carriers)}")
+                st.error('Please Select a valid Weight :name_badge:')
 
-                data = pd.DataFrame()
-                data['carriers'] = available_carriers
+        else:
+            if weight == 0:
+                st.error('Please Select a valid Weight :name_badge:')
+            else:
+                carrier, time = predict(features={
+                    'city': city,
+                    'weight': weight,
+                    'start_date': start_date
+                })
+                if carrier != None:
+                    df = pd.read_csv('orders.csv')
+                    df['Id'] = df['Id'].astype(int)
+                    if int(order_id) in df['Id'].unique():
+                        st.error('This Order is already exists :name_badge:')
 
-                prediction = model.predict([
-                    [i, city, weight, start_date.year, start_date.month, start_date.day, start_date.weekday()] for i in available_carriers
-                ])
-
-                data['class'] = prediction
-                data = data[data['class'] == prediction.min(
-                )].reset_index().drop('index', axis=1)
-
-                data['expected time'] = RegModel(
-                    data['carriers'], city, weight, start_date)
-
-                # data['upper limit'] = data['expected time'] + \
-                #     limits(data['expected time'])
-                # data['lower limit'] = data['expected time'] - \
-                #     limits(data['expected time'])
-                # data['lower limit'] = data['lower limit'].apply(
-                #     lambda x: x if x > 0 else 0.)
-
-                data = data.sort_values('expected time')
-
-                data.columns = ['Carrier', 'class', 'Time (days)']
-                # st.write(data[data['preds'] == prediction.min()].reset_index())
-                st.success(
-                    f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
-                st.dataframe(data)
+                    else:
+                        place_order(
+                            [order_id, city, start_date, weight, carrier, time])
+                        st.success('The Order\'s added now 	:new:')
+                        st.snow()
 
 
 elif option == 'Model Constraints':
@@ -154,8 +116,47 @@ elif option == 'Model Constraints':
     st.title(":sparkles: Model Constraints")
     st.divider()
     df['Weight (kg)'] = np.ceil(df['Weight (kg)'])
+
     st.dataframe(df, use_container_width=True)
 
+elif option == 'Orders Dashboard':
+    st.title(":anchor: Orders Dashboard")
+    st.divider()
+    df_orders = pd.read_csv('orders.csv', index_col='Id')
+
+    x = st.empty()
+
+    x.dataframe(df_orders, use_container_width=True)
+    st.divider()
+
+    if st.checkbox('Deliver Order'):
+        st.write('')
+
+        if len(df_orders[df_orders['Delivered'] == False].index) > 0:
+
+            order_id = st.selectbox(
+                'Select Order ID: ', ['Select ID', *df_orders[df_orders['Delivered'] == False].index])
+            st.write('')
+            btn = st.button('Order',
+                            type='primary', use_container_width=True, disabled=order_id == 'Select ID')
+            if btn:
+
+                df_orders.loc[order_id, 'Delivered'] = True
+                df_orders.to_csv('orders.csv')
+
+                st.success(
+                    f"Well Done..! Order #{order_id} is delivered by Carrier {df_orders.loc[order_id,'Carrier']} during {np.ceil(df_orders.loc[order_id,'Estimated Duration'])}")
+
+                df_orders = pd.read_csv('orders.csv', index_col='Id')
+                x.dataframe(df_orders, use_container_width=True,)
+
+        else:
+            st.info('All The Orders has been delivered :white_check_mark:')
+
+    st.write('')
+    if st.checkbox('Visualize Orders'):
+        from visual import chart
+        chart(df_orders)
 
 else:
     st.title(":ocean: Project Flowchart")
