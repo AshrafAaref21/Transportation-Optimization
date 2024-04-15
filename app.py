@@ -9,11 +9,10 @@ from visual import chart
 
 
 # open Logo file
-img = Image.open("logo.png")
-img = img.resize((70, 70))
-ksa = Image.open('ksa.png').resize((100, 100))
-# Set up the page configuration
+img = Image.open("logo.png").resize((100, 100))
+ksa = Image.open('ksa.png').resize((70, 70))
 
+# Set up the page configuration
 st.set_page_config(
     page_title="Carr Co.",
     page_icon=img,
@@ -32,10 +31,11 @@ df_orders = pd.read_csv('orders.csv')
 
 if option == 'Model Run':
     # Page Header
-    col_1, col_2 = st.columns([6, 1])
+    col_1, col_2 = st.columns([8, 1])
     with col_1:
         st.title(":coffee: Get The Perfect Carrier For The Shippments")
     with col_2:
+        st.write('')
         st.image(ksa)
 
     # City Input
@@ -147,7 +147,7 @@ elif option == 'Orders Dashboard':
                 df_orders.to_csv('orders.csv')
 
                 st.success(
-                    f"Well Done..! Order #{order_id} is delivered by Carrier {df_orders.loc[order_id,'Carrier']} during {np.ceil(df_orders.loc[order_id,'Estimated Duration'])}")
+                    f"Well Done..! Order #{order_id} is delivered by Carrier {df_orders.loc[order_id,'Carrier']} within {int(np.ceil(df_orders.loc[order_id,'Estimated Duration']))} days")
 
                 df_orders = pd.read_csv('orders.csv', index_col='Id')
                 x.dataframe(df_orders, use_container_width=True,)
