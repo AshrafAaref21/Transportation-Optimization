@@ -1,12 +1,6 @@
 import pandas as pd
 from datetime import datetime
 import xgboost as xgb
-import pickle
-
-# some time later...
-
-# load the model from disk
-loaded_model = pickle.load(open("finalized_model.sav", 'rb'))
 
 
 city_map = {'Jeddah': 0, 'Madinah': 1,
@@ -51,9 +45,7 @@ def RegModel(available_carriers: list,
 
     df_avail = pd.DataFrame()
     df_avail['Carrier'] = available_carriers
-    df_avail['Carrier'] = df_avail['Carrier'].map(carrier_map)
     df_avail['City'] = city
-    df_avail['City'] = df_avail['City'].map(carrier_map)
     df_avail['Weight'] = weight
     df_avail['Year'] = start_date.year
     df_avail['Month'] = start_date.month
@@ -68,6 +60,9 @@ def RegModel(available_carriers: list,
     df_avail['Day'] = df_avail['Day'].astype("category")
     df_avail['DayOfWeek'] = df_avail['DayOfWeek'].astype("category")
 
-    df_avail['preds'] = loaded_model.predict(df_avail)
+    model2 = xgb.XGBRegressor()
+    model2.load_model("reg_model.json")
+
+    df_avail['preds'] = model2.predict(df_avail)
 
     return df_avail['preds'].values

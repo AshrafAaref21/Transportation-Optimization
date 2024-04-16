@@ -186,7 +186,7 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
 
 def carrier_map(carriers):
 
-    return {
+    dic = {
         "A": "Aramex",
         "B":
             "LaBaih",
@@ -247,7 +247,12 @@ def carrier_map(carriers):
             "DD":
             "SMB",
     }
+    new_names = []
+    for i in carriers:
+        new_names.append(dic[i])
+
+    return new_names
 
 
 if __name__ == '__main__':
-    print(carrier_map())
+    print(carrier_map(['A', 'C']))
