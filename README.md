@@ -3,6 +3,24 @@
 
 Creating Software to manage an Company Orders using Machine learning model that predicts Company Carriers Delivery Duration and Carriers Constraints (Starting from Data minning and feature engineering to model selection and final making a dashboard to interact with employees).
 
+
+---------------------------
+
+## Steps
+
+        1. Data Minning.
+        2. Data Preprocessing & Analysis.
+        3. Upsampling.
+        4. Create Classifier Model.
+        5. Create Regressor Model.
+        6. Fine Tunning.
+        7. Create Dashboard and User Interface To interact with real world.
+        8. Deploy The App.
+
+
+-------------------------------------------------------
+
+
 ---------------------------
 
 ## Technologies
