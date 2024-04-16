@@ -82,8 +82,11 @@ def place_order(order):
     headers = [
         'Id', 'City', 'Date', 'Weight', 'Carrier', 'Estimated Duration', 'Delivered']
     df = pd.DataFrame(columns=headers)
-    df.loc[0] = [*order, False]
-    df.to_csv('orders.csv', mode='a', index=False, header=False)
+    if order[0] == 'Select ID':
+        pass
+    else:
+        df.loc[0] = [*order, False]
+        df.to_csv('orders.csv', mode='a', index=False, header=False)
 
 
 def predict(display: bool = False, features: dict = {}) -> list[str, float]:
@@ -120,6 +123,7 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
             data['carriers'], features['city'], features['weight'], features['start_date'])
 
         data = data.sort_values('expected time')
+        data['carriers'] = data['carriers'].map(carrier_map(mapping=True))
         data.columns = ['Carrier', 'class', 'Time (days)']
         data.index = range(1, len(data)+1)
 
@@ -142,9 +146,9 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
 
         if len(available_carriers) == 1:
             st.info(
-                f"We Only Have Carrier {available_carriers[0]} for This Weight")
+                f"We Only Have Carrier {carrier_map(available_carriers[0])} for This Weight")
 
-            return available_carriers[0], RegModel(available_carriers, features['city'], features['weight'], features['start_date'])
+            return carrier_map(available_carriers[0]), RegModel(available_carriers, features['city'], features['weight'], features['start_date'])
 
         elif len(available_carriers) == 0:
             st.info(
@@ -154,7 +158,7 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
         else:
             if display:
                 st.info(
-                    f"Available Carriers: {' - '.join(available_carriers)}")
+                    f"Available Carriers: {' - '.join([carrier_map(i) for i in available_carriers])}")
 
             data = pd.DataFrame()
             data['carriers'] = available_carriers
@@ -172,6 +176,8 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
 
             data = data.sort_values('expected time')
 
+            data['carriers'] = data['carriers'].map(carrier_map(mapping=True))
+
             data.columns = ['Carrier', 'class', 'Time (days)']
             data.index = range(1, len(data)+1)
 
@@ -181,10 +187,10 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
                     f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
 
                 st.dataframe(data.drop('class', axis=1))
-            return data.iloc[0, 0], data.iloc[0, -1]
+            return carrier_map(data.iloc[0, 0]), data.iloc[0, -1]
 
 
-def carrier_map(carriers):
+def carrier_map(carrier: str = '', mapping=False):
 
     dic = {
         "A": "Aramex",
@@ -247,11 +253,11 @@ def carrier_map(carriers):
             "DD":
             "SMB",
     }
-    new_names = []
-    for i in carriers:
-        new_names.append(dic[i])
 
-    return new_names
+    if mapping:
+        return dic
+
+    return dic[carrier]
 
 
 if __name__ == '__main__':

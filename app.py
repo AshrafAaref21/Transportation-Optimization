@@ -27,7 +27,8 @@ option = st.sidebar.selectbox('Select The Activity Option', activities)
 
 # Open Constraints File
 df = pd.read_csv('constraints.csv')
-df_orders = pd.read_csv('orders.csv')
+df_orders = pd.read_csv('orders.csv', index_col='Id')
+df_orders['Date'] = pd.to_datetime(df_orders['Date'])
 
 if option == 'Model Run':
     # Page Header
@@ -102,14 +103,18 @@ if option == 'Model Run':
                 })
                 if carrier != None:
                     # Check Order ID if already exists
-                    df_orders['Id'] = df_orders['Id'].astype(int)
-                    if int(order_id) in df_orders['Id'].unique():
-                        st.error('This Order is already exists :name_badge:')
+
+                    if int(order_id) in df_orders.index:
+                        st.error(
+                            'This Order is already exists :name_badge:')
+                        st.warning(
+                            f'Last Order ID was {df_orders.index[-1]}, Try Order #{df_orders.index[-1] + 1}')
 
                     else:
+
                         place_order(
                             [order_id, city, start_date, weight, carrier, time])
-                        st.success('The Order\'s added now 	:new:')
+                        st.success('Order\'s Successfully Added :new:')
                         st.snow()
 
 
@@ -125,8 +130,9 @@ elif option == 'Orders Dashboard':
 
     st.title(":anchor: Orders Dashboard")
     st.divider()
-    df_orders = pd.read_csv('orders.csv', index_col='Id')
+
     # Create Empty Component to be rerendered every submit
+
     x = st.empty()
 
     x.dataframe(df_orders, use_container_width=True)
@@ -141,17 +147,28 @@ elif option == 'Orders Dashboard':
                 'Select Order ID: ', ['Select ID', *df_orders[df_orders['Delivered'] == False].index])
             st.write('')
             btn = st.button('Order',
-                            type='primary', use_container_width=True, disabled=order_id == 'Select ID')
+                            type='primary', use_container_width=True, disabled=(order_id == 'Select ID' or order_id in df_orders[df_orders['Delivered'] == True].index))
             if btn:
+                if order_id != 'Select ID':
+                    df_orders.loc[order_id, 'Delivered'] = True
+                    df_orders.to_csv('orders.csv')
 
-                df_orders.loc[order_id, 'Delivered'] = True
-                df_orders.to_csv('orders.csv')
+                    deliver_duration = (pd.Timestamp.now() -
+                                        df_orders.loc[order_id, 'Date']).days
+                    if deliver_duration > 1:
+                        msg = f"in {deliver_duration} days"
+                    elif deliver_duration == 1:
+                        msg = f"in a day"
+                    else:
+                        msg = f"in the same day"
 
-                st.success(
-                    f"Well Done..! Order #{order_id} is delivered by Carrier {df_orders.loc[order_id,'Carrier']} within {int(np.ceil(df_orders.loc[order_id,'Estimated Duration']))} days")
+                    st.success(
+                        f"Well Done..! Order #{order_id} is delivered by Carrier {df_orders.loc[order_id,'Carrier']} {msg}")
 
-                df_orders = pd.read_csv('orders.csv', index_col='Id')
-                x.dataframe(df_orders, use_container_width=True,)
+                    df_orders = pd.read_csv('orders.csv', index_col='Id')
+                    df_orders['Date'] = pd.to_datetime(df_orders['Date'])
+
+                    x.dataframe(df_orders, use_container_width=True,)
 
         else:
             st.info('All The Orders has been delivered :white_check_mark:')
