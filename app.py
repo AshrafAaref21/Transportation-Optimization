@@ -21,7 +21,7 @@ st.set_page_config(
 
 
 activities = ['Model Run', 'Model Constraints',
-              'Model Details', 'Orders Dashboard']
+               'Orders Dashboard']
 
 option = st.sidebar.selectbox('Select The Activity Option', activities)
 
@@ -166,8 +166,4 @@ elif option == 'Orders Dashboard':
 
         chart(df_orders)
 
-else:
-    st.title(":ocean: Project Flowchart")
-    st.divider()
-    img = Image.open("Flowchart.png")
-    st.image(img, use_column_width=True)
+
