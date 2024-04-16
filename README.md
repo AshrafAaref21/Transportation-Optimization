@@ -20,7 +20,7 @@ Creating Software to manage an Company Orders using Machine learning model that 
 
 ## Model Deployment
 
-You can find the dashboard from this [link](https://ml-carriers-ksa.streamlit.app/)
+You can find the dashboard from this [link](https://order-carrier-assignment.streamlit.app/)
 
 -----------------------------------------------------------------
 
