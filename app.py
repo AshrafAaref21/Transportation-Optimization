@@ -21,7 +21,7 @@ st.set_page_config(
 
 
 activities = ['Model Run', 'Model Constraints',
-               'Orders Dashboard']
+              'Model Details', 'Orders Dashboard']
 
 option = st.sidebar.selectbox('Select The Activity Option', activities)
 
@@ -56,30 +56,25 @@ if option == 'Model Run':
     weight = st.number_input('Input Order Weight (gm)', value=0.) / 1000
 
     st.divider()
-    disabled = weight == 0.
+
     col1, col2 = st.columns([1.5, 2])
     with col1:
         radio = st.radio(
             'Options', ['Show Prediction', 'Place Order'], index=0)
-    # Initial Predictions button
+
+    # Create buttons
     with col2:
-    
+
         if radio == 'Show Prediction':
             st.write('')
             st.write('')
-            text = 'Start'
-            if disabled:
-                text = 'Select Order Features'
-            btn = st.button(text,
-                            type='primary', use_container_width=True, disabled=disabled)
+            btn = st.button('Start',
+                            type='primary', use_container_width=True, disabled=weight == 0.)
 
         else:
-            text = 'Order'
-            if disabled:
-                text = 'Select Order Features'
             order_id = st.number_input('Input Order ID: ', value=1)
-            btn = st.button(text,
-                            type='primary', use_container_width=True, disabled=disabled)
+            btn = st.button('Order',
+                            type='primary', use_container_width=True, disabled=weight == 0.)
 
     # st.write(get_orders_constraint('A'))
 
@@ -106,7 +101,7 @@ if option == 'Model Run':
                     'start_date': start_date
                 })
                 if carrier != None:
-
+                    # Check Order ID if already exists
                     df_orders['Id'] = df_orders['Id'].astype(int)
                     if int(order_id) in df_orders['Id'].unique():
                         st.error('This Order is already exists :name_badge:')
@@ -119,19 +114,19 @@ if option == 'Model Run':
 
 
 elif option == 'Model Constraints':
-    # Page Header
 
     st.title(":sparkles: Model Constraints")
     st.divider()
     df['Weight (kg)'] = np.ceil(df['Weight (kg)'])
-
     st.dataframe(df, use_container_width=True)
 
+
 elif option == 'Orders Dashboard':
+
     st.title(":anchor: Orders Dashboard")
     st.divider()
     df_orders = pd.read_csv('orders.csv', index_col='Id')
-
+    # Create Empty Component to be rerendered every submit
     x = st.empty()
 
     x.dataframe(df_orders, use_container_width=True)
@@ -166,4 +161,8 @@ elif option == 'Orders Dashboard':
 
         chart(df_orders)
 
-
+else:
+    st.title(":ocean: Project Flowchart")
+    st.divider()
+    img = Image.open("Flowchart.png")
+    st.image(img, use_column_width=True)

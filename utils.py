@@ -19,15 +19,15 @@ model.load_model("model")
 def limits(expected_values: pd.Series = pd.Series()) -> pd.Series:
     """
     Get The Distance between expected values and its limits
-    -------------------------------------------------------
+
     -------------------------------------------------------
     Args:
-    -----
+
        expected_value: (pandas Series)
 
     -------------------------------------------------------
     Returns:
-    --------
+
        Series of distances
 
     """
@@ -43,6 +43,21 @@ def limits(expected_values: pd.Series = pd.Series()) -> pd.Series:
 
 
 def get_orders_constraint(carriers):
+    """
+    Filter Function to get The list of carriers by its order constraints
+
+    -------------------------------------------------------
+    Args:
+
+       carriers: (List)
+
+    -------------------------------------------------------
+    Returns:
+
+       Filtered list of available Carriers
+
+    """
+
     new_list_of_carriers = []
     for carrier in carriers:
         if len(df_orders[(df_orders['Delivered'] == False)
@@ -52,6 +67,18 @@ def get_orders_constraint(carriers):
 
 
 def place_order(order):
+    """
+    Place an order Method
+
+    -------------------------------------------------------
+
+    Args:
+
+       order: (List)
+
+    -------------------------------------------------------
+
+    """
     headers = [
         'Id', 'City', 'Date', 'Weight', 'Carrier', 'Estimated Duration', 'Delivered']
     df = pd.DataFrame(columns=headers)
@@ -60,7 +87,21 @@ def place_order(order):
 
 
 def predict(display: bool = False, features: dict = {}) -> list[str, float]:
+    """
+    Predicition Cycle Function.
 
+    -------------------------------------------------------
+    Args:
+
+       display: (Boolean) -> Display the out prediction in the UI, or not.
+       features: (Dictionary) -> Order Features.
+
+    -------------------------------------------------------
+    Returns:
+
+       Predicted Order Class and Delivery Duration.
+
+    """
     available_carriers = list(
         df_constraints[(df_constraints['Weight (kg)'] >= features['weight']) & (df_constraints[features['city']] == 1)].index)
 
@@ -86,7 +127,7 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
 
             st.success(
                 f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
-            st.dataframe(data,
+            st.dataframe(data.drop('class', axis=1),
                          use_container_width=True)
             st.snow()
         return data.iloc[0, 0], data.iloc[0, -1]
@@ -139,5 +180,74 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
                 st.success(
                     f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
 
-                st.dataframe(data)
+                st.dataframe(data.drop('class', axis=1))
             return data.iloc[0, 0], data.iloc[0, -1]
+
+
+def carrier_map(carriers):
+
+    return {
+        "A": "Aramex",
+        "B":
+            "LaBaih",
+            "C":
+            "Tamex",
+            "D":
+            "Aymakan",
+            "E":
+            "Smsa",
+            "F":
+            "FDA",
+            "G":
+            "Mkhdoom",
+            "H":
+            "Wadha",
+            "I":
+            "Kudhha",
+            "J":
+            "Mahmoul",
+            "K":
+            "Jones",
+            "L":
+            "Lastpoint",
+            "M":
+            "Naqel",
+            "N":
+            "MORA",
+            "O":
+            "UPS",
+            "P":
+            "Weenk",
+            "Q":
+            "Aja",
+            "R":
+            "IMile",
+            "S":
+            "JandT",
+            "T":
+            "Pick",
+            "U":
+            "BARQ",
+            "V":
+            "Onway",
+            "W":
+            "Flow",
+            "X":
+            "SPL",
+            "Y":
+            "R2",
+            "Z":
+            "Shipa",
+            "AA":
+            "Nashmi",
+            "BB":
+            "Roz",
+            "CC":
+            "SHL",
+            "DD":
+            "SMB",
+    }
+
+
+if __name__ == '__main__':
+    print(carrier_map())
