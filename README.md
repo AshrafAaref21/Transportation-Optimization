@@ -42,6 +42,13 @@ You can find the dashboard from this [link](https://order-carrier-assignment.str
 
 -----------------------------------------------------------------
 
+
+## Run App
+
+        streamlit run app.py
+
+-----------------------------------------------------------------
+
 ## Statistics vs Machine Learining
 
 Statistics and machine learning often get lumped together because they use similar means to reach a goal. However, the goals that they are trying to achieve are very different. The purpose of statistics is to make an inference about a population based on a sample. Machine learning is used to make repeatable predictions by finding patterns within data. 
