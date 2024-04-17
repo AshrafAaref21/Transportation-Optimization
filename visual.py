@@ -21,10 +21,8 @@ def chart(df: pd.DataFrame) -> st.plotly_chart:
         y='num_orders',
         color='Carrier',
         pattern_shape='Delivered',
-        pattern_shape_sequence=['.', ''],
-        labels={'num_orders': 'Count Of Orders',
-                # 'Carrier': '     Carrier',
-                }
+        pattern_shape_sequence=['', '.'],
+        labels={'num_orders': 'Count Of Orders'}
     )
     _, cl, _ = st.columns([2.5, 4, 2.5])
 
