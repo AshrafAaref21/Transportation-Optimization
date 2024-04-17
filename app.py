@@ -7,7 +7,8 @@ from PIL import Image
 from utils import place_order, predict
 from visual import chart
 
-
+city_map = {'Jeddah': 0, 'Madinah': 1,
+            'Makkah': 2, 'Riyadh': 3, 'Dammam': 4}
 # open Logo file
 img = Image.open("logo.png").resize((100, 100))
 ksa = Image.open('ksa.png').resize((70, 70))
@@ -147,7 +148,11 @@ elif option == 'Orders Dashboard':
                 'Select Order ID: ', ['Select ID', *df_orders[df_orders['Delivered'] == False].index])
             st.write('')
             btn = st.button('Order',
-                            type='primary', use_container_width=True, disabled=(order_id == 'Select ID' or order_id in df_orders[df_orders['Delivered'] == True].index))
+                            type='primary',
+                            use_container_width=True,
+                            disabled=(
+                                order_id == 'Select ID' or order_id in df_orders[df_orders['Delivered'] == True].index)
+                            )
             if btn:
                 if order_id != 'Select ID':
                     df_orders.loc[order_id, 'Delivered'] = True
@@ -164,7 +169,7 @@ elif option == 'Orders Dashboard':
 
                     st.success(
                         f"Well Done..! Order #{order_id} is delivered by Carrier {df_orders.loc[order_id,'Carrier']} {msg}")
-
+                    st.snow()
                     df_orders = pd.read_csv('orders.csv', index_col='Id')
                     df_orders['Date'] = pd.to_datetime(df_orders['Date'])
 
