@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
-from csv import DictWriter
 from catboost import CatBoostClassifier
-from regmod import RegModel
 import streamlit as st
+
+from regmod import RegModel
 
 
 df_error = pd.read_csv('error.csv', index_col=0)
