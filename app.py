@@ -7,7 +7,8 @@ from PIL import Image
 from utils import place_order, predict
 from visual import chart
 
-
+city_map = {'Jeddah': 0, 'Madinah': 1,
+            'Makkah': 2, 'Riyadh': 3, 'Dammam': 4}
 # open Logo file
 img = Image.open("logo.png").resize((100, 100))
 ksa = Image.open('ksa.png').resize((70, 70))

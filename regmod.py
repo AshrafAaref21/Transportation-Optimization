@@ -5,6 +5,7 @@ import xgboost as xgb
 
 city_map = {'Jeddah': 0, 'Madinah': 1,
             'Makkah': 2, 'Riyadh': 3, 'Dammam': 4}
+
 carrier_map = {'A': 0,
                'B': 1,
                'C': 2,
@@ -53,7 +54,9 @@ def RegModel(available_carriers: list,
     df_avail['DayOfWeek'] = start_date.weekday()
 
     df_avail['Carrier'] = df_avail['Carrier'].astype("category")
+    df_avail['Carrier'] = df_avail['Carrier'].map(carrier_map)
     df_avail['City'] = df_avail['City'].astype("category")
+    df_avail['City'] = df_avail['City'].map(city_map)
 
     df_avail['Year'] = df_avail['Year'].astype("category")
     df_avail['Month'] = df_avail['Month'].astype("category")

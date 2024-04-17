@@ -191,6 +191,21 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
 
 
 def carrier_map(carrier: str = '', mapping=False):
+    """
+    Mapping Carrier Name to get the actual carrier name.
+
+    -------------------------------------------------------
+    Args:
+
+       carrier: (str) -> Carrier Symbol.
+       mapping: (Dictionary) -> Return the whole dictionary of Carriers name and its symbol or just the given carrier name.
+
+    -------------------------------------------------------
+    Returns:
+
+       Mapped Carriers.
+
+    """
 
     dic = {
         "A": "Aramex",
@@ -261,4 +276,4 @@ def carrier_map(carrier: str = '', mapping=False):
 
 
 if __name__ == '__main__':
-    print(carrier_map(['A', 'C']))
+    print(carrier_map("A"))

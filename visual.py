@@ -5,7 +5,7 @@ import numpy as np
 from datetime import datetime, timedelta
 
 
-def chart(df: pd.DataFrame):
+def chart(df: pd.DataFrame) -> st.plotly_chart:
     df['Date'] = pd.to_datetime(df['Date'])
     df = df[df['Date'] >= (datetime.now() - timedelta(30))]
     df = df[['Date', 'Carrier', 'Estimated Duration', 'Weight', 'Delivered']].groupby(['Date', 'Carrier', 'Delivered']).agg(

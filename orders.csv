@@ -12,7 +12,7 @@ Id,City,Date,Weight,Carrier,Estimated Duration,Delivered
 12,Dammam,2024-04-11,0.152,SMB,3.0699558,False
 13,Madinah,2024-04-12,4.893,IMile,0.583716,True
 14,Makkah,2024-04-13,598.311,Aramex,6.842639,False
-15,Jeddah,2024-04-16,0.012,Naqel,0.7610794,False
+15,Jeddah,2024-04-16,0.012,Naqel,0.7610794,True
 16,Jeddah,2024-04-16,300.0,Aja,2.6542327,False
 17,Riyadh,2024-03-13,300.0,Pick,7.288166,True
 18,Jeddah,2024-04-10,0.152,Jones,0.83870953,False
