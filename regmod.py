@@ -1,4 +1,5 @@
 import pandas as pd
+from random import random
 from datetime import datetime
 import xgboost as xgb
 
@@ -38,6 +39,13 @@ carrier_map = {'A': 0,
                'DD': 29}
 
 
+def treat(x):
+    if x < 0:
+        return random(0.0000, 0.0100)
+    else:
+        return x
+
+
 def RegModel(available_carriers: list,
              city: str,
              weight: float,
@@ -67,5 +75,6 @@ def RegModel(available_carriers: list,
     model2.load_model("reg_model.json")
 
     df_avail['preds'] = model2.predict(df_avail)
+    df_avail['preds'] = df_avail['preds'].apply(treat)
 
     return df_avail['preds'].values

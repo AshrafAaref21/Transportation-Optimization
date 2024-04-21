@@ -1,9 +1,8 @@
 import pandas as pd
 import numpy as np
 from catboost import CatBoostClassifier
-import streamlit as st
-
 from regmod import RegModel
+import streamlit as st
 
 
 df_error = pd.read_csv('error.csv', index_col=0)
@@ -80,12 +79,12 @@ def place_order(order):
 
     """
     headers = [
-        'Id', 'City', 'Date', 'Weight', 'Carrier', 'Estimated Duration', 'Delivered']
+        'Id', 'City', 'Date', 'Weight', 'Carrier', 'Estimated Duration', 'Delivered', 'Actual Duration']
     df = pd.DataFrame(columns=headers)
     if order[0] == 'Select ID':
         pass
     else:
-        df.loc[0] = [*order, False]
+        df.loc[0] = [*order, False, np.nan]
         df.to_csv('orders.csv', mode='a', index=False, header=False)
 
 
@@ -124,7 +123,7 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
 
         data = data.sort_values('expected time')
         data['carriers'] = data['carriers'].map(carrier_map(mapping=True))
-        data.columns = ['Carrier', 'class', 'Time (days)']
+        data.columns = ['Carrier', 'class', 'Estimated Duration (Days)']
         data.index = range(1, len(data)+1)
 
         if display:
@@ -133,7 +132,7 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
                 f":dart: The Best Carrier for this Order is: ({data.iloc[0,0]})")
             st.dataframe(data.drop('class', axis=1),
                          use_container_width=True)
-            st.snow()
+
         return data.iloc[0, 0], data.iloc[0, -1]
 
     else:
@@ -178,7 +177,7 @@ def predict(display: bool = False, features: dict = {}) -> list[str, float]:
 
             data['carriers'] = data['carriers'].map(carrier_map(mapping=True))
 
-            data.columns = ['Carrier', 'class', 'Time (days)']
+            data.columns = ['Carrier', 'class', 'Estimated Duration (Days)']
             data.index = range(1, len(data)+1)
 
             # st.write(data[data['preds'] == prediction.min()].reset_index())

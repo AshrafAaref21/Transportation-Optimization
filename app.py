@@ -4,8 +4,8 @@ import numpy as np
 from datetime import datetime
 from PIL import Image
 
-from utils import place_order, predict
-from visual import chart
+from utils import place_order, predict, carrier_map
+from visual import chart, speed, scatter, performance
 
 city_map = {'Jeddah': 0, 'Madinah': 1,
             'Makkah': 2, 'Riyadh': 3, 'Dammam': 4}
@@ -21,8 +21,7 @@ st.set_page_config(
 )
 
 
-activities = ['Model Run', 'Model Constraints',
-              'Model Details', 'Orders Dashboard']
+activities = ['Model Run', 'Model Constraints', 'Deliver Orders', 'Dasboard']
 
 option = st.sidebar.selectbox('Select The Activity Option', activities)
 
@@ -35,7 +34,7 @@ if option == 'Model Run':
     # Page Header
     col_1, col_2 = st.columns([8, 1])
     with col_1:
-        st.title(":coffee: Get The Perfect Carrier For The Shippments")
+        st.title("Assign order to carrier 📦➡️🚛")
     with col_2:
         st.write('')
         st.image(ksa)
@@ -116,7 +115,6 @@ if option == 'Model Run':
                         place_order(
                             [order_id, city, start_date, weight, carrier, time])
                         st.success('Order\'s Successfully Added :new:')
-                        st.snow()
 
 
 elif option == 'Model Constraints':
@@ -124,12 +122,15 @@ elif option == 'Model Constraints':
     st.title(":sparkles: Model Constraints")
     st.divider()
     df['Weight (kg)'] = np.ceil(df['Weight (kg)'])
-    st.dataframe(df, use_container_width=True)
+    df['carrier'] = df['carrier'].replace(carrier_map(mapping=True))
+    df.set_index('carrier', inplace=True)
+    st.dataframe(df.sort_values(['num_orders'], ascending=False),
+                 use_container_width=True)
 
 
-elif option == 'Orders Dashboard':
+elif option == 'Deliver Orders':
 
-    st.title(":anchor: Orders Dashboard")
+    st.title(":anchor: Orders")
     st.divider()
 
     # Create Empty Component to be rerendered every submit
@@ -138,53 +139,69 @@ elif option == 'Orders Dashboard':
 
     x.dataframe(df_orders, use_container_width=True)
     st.divider()
+    _, cl, _ = st.columns([2, 1, 2])
 
-    if st.checkbox('Deliver Order'):
+    with cl:
+
+        st.subheader('Order Status 🗽')
         st.write('')
 
-        if len(df_orders[df_orders['Delivered'] == False].index) > 0:
+    if len(df_orders[df_orders['Delivered'] == False].index) > 0:
+        ls_of_orders = list(
+            df_orders[df_orders['Delivered'] == False].index)
+        order_id = st.selectbox(
+            'Select Order ID: ', ['Select ID', *ls_of_orders])
+        st.write('')
+        btn = st.button('Delivered',
+                        type='primary',
+                        use_container_width=True,
+                        disabled=(
+                            order_id == 'Select ID' or order_id in df_orders[df_orders['Delivered'] == True].index)
+                        )
+        if btn:
+            if order_id != 'Select ID':
+                deliver_duration = (pd.Timestamp.now() -
+                                    df_orders.loc[order_id, 'Date']).days
 
-            order_id = st.selectbox(
-                'Select Order ID: ', ['Select ID', *df_orders[df_orders['Delivered'] == False].index])
-            st.write('')
-            btn = st.button('Order',
-                            type='primary',
-                            use_container_width=True,
-                            disabled=(
-                                order_id == 'Select ID' or order_id in df_orders[df_orders['Delivered'] == True].index)
-                            )
-            if btn:
-                if order_id != 'Select ID':
-                    df_orders.loc[order_id, 'Delivered'] = True
-                    df_orders.to_csv('orders.csv')
+                df_orders.loc[order_id, 'Delivered'] = True
+                df_orders.loc[order_id,
+                              'Actual Duration'] = int(deliver_duration)
 
-                    deliver_duration = (pd.Timestamp.now() -
-                                        df_orders.loc[order_id, 'Date']).days
-                    if deliver_duration > 1:
-                        msg = f"in {deliver_duration} days"
-                    elif deliver_duration == 1:
-                        msg = f"in a day"
-                    else:
-                        msg = f"in the same day"
+                df_orders.to_csv('orders.csv')
+                if deliver_duration > 1:
+                    msg = f"in {deliver_duration} days"
+                elif deliver_duration == 1:
+                    msg = f"in a day"
+                else:
+                    msg = f"in the same day"
 
-                    st.success(
-                        f"Well Done..! Order #{order_id} is delivered by Carrier {df_orders.loc[order_id,'Carrier']} {msg}")
-                    st.snow()
-                    df_orders = pd.read_csv('orders.csv', index_col='Id')
-                    df_orders['Date'] = pd.to_datetime(df_orders['Date'])
+                st.success(
+                    f"Well Done..! Order #{order_id} is delivered by Carrier {df_orders.loc[order_id,'Carrier']} {msg}")
 
-                    x.dataframe(df_orders, use_container_width=True,)
+                ls_of_orders.pop(ls_of_orders.index(order_id))
+                df_orders = pd.read_csv('orders.csv', index_col='Id')
+                df_orders['Date'] = pd.to_datetime(df_orders['Date'])
 
-        else:
-            st.info('All The Orders has been delivered :white_check_mark:')
+                x.dataframe(df_orders, use_container_width=True,)
 
-    st.write('')
-    if st.checkbox('Visualize Orders'):
+    else:
+        st.info('All The Orders has been delivered :white_check_mark:')
 
-        chart(df_orders)
 
 else:
-    st.title(":ocean: Project Flowchart")
-    st.divider()
-    img = Image.open("Flowchart.png")
-    st.image(img, use_column_width=True)
+    _, cl, _ = st.columns(3)
+    with cl:
+        st.title('Dashboard 📑')
+    st.write('')
+
+    if st.checkbox('Visualize Orders'):
+        chart(df_orders)
+
+    if st.checkbox('Carrier Speed'):
+        speed(df_orders)
+
+    if st.checkbox('Weight & Time Relationship'):
+        scatter(df_orders)
+
+    if st.checkbox('Model Performance'):
+        performance(df_orders)
