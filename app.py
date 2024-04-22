@@ -143,7 +143,7 @@ elif option == 'Deliver Orders':
 
     with cl:
 
-        st.subheader('Order Status 🗽')
+        st.subheader('Order Status')
         st.write('')
 
     if len(df_orders[df_orders['Delivered'] == False].index) > 0:
