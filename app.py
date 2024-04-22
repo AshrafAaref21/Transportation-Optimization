@@ -203,5 +203,3 @@ else:
     if st.checkbox('Weight & Time Relationship'):
         scatter(df_orders)
 
-    if st.checkbox('Model Performance'):
-        performance(df_orders)
