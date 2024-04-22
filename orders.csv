@@ -20,7 +20,7 @@ Id,City,Date,Weight,Carrier,Estimated Duration,Delivered,Actual Duration
 20,Madinah,2024-04-12,4.893,IMile,0.583716,True,1.0
 21,Makkah,2024-04-13,598.311,Aramex,6.842639,True,8.0
 22,Jeddah,2024-04-16,0.012,Naqel,0.7610794,True,0.0
-23,Dammam,2024-04-14,125.123,IMile,2.6542327,True,7.0
+23,Dammam,2024-04-14,125.123,IMile,2.6542327,True,3.0
 24,Makkah,2024-04-15,12.513,Aja,0.8669179,False,
 25,Riyadh,2024-04-08,1.234,R2,0.9704844,False,
 26,Makkah,2024-04-13,598.311,Aramex,6.842639,True,6.0
