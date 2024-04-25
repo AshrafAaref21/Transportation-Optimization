@@ -1,5 +1,4 @@
 import pandas as pd
-from random import random
 from datetime import datetime
 import xgboost as xgb
 
@@ -41,7 +40,7 @@ carrier_map = {'A': 0,
 
 def treat(x):
     if x < 0:
-        return random(0.0000, 0.0100)
+        return 0.0015
     else:
         return x
 
